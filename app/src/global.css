@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Vina+Sans&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Inpin';
+  src: url('/inpin.ttf') format('truetype');
+}
+
+:root {
+  --color-theme: #d8fa00;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inpin', 'Inter', 'Helvetica', 'Roboto', 'Arial', sans-serif;
+  font-size: 16px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Vina Sans', 'Inter', 'Helvetica', 'Roboto', 'Impact', sans-serif;
+  line-height: 1;
+}
+
+a {
+  position: relative;
+}
+
+/* a::after {
+  content: '→';
+  display: block;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+} */

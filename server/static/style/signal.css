@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+
+body,
+html {
+  margin: 0;
+  padding: 3rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+
+  background-color: #181818;
+  color: #ededed;
+}
+
+button {
+  font-family: inherit;
+  padding: 0.6rem 1.5rem;
+  background: url("https://cdn.starrailstation.com/assets/7fa65888b9aca915ded5604a183c0a2a35f6e857a8ca0843d7a47894c4521333.webp");
+  background-size: cover;
+  background-position: center;
+  border: 1px solid #ededed;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.2s;
+
+  border-right: none;
+  &:last-child {
+    border-right: 1px solid #ededed;
+  }
+
+  &:hover {
+    /* background: #ededed39; */
+  }
+}
+
+.signal-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
+
+  > :first-child {
+    width: 300px;
+    flex-grow: 0;
+  }
+}
+
+.banner-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+
+  flex-grow: 1;
+  flex-basis: 100%;
+}
+
+.details-selector {
+  display: flex;
+  gap: 0rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+
+  > button {
+    width: 150px;
+  }
+}
+
+.banner-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+}

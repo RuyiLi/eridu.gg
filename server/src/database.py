@@ -4,7 +4,7 @@ from typing import List
 import duckdb
 
 
-conn = duckdb.connect('../eridu.db')
+conn = duckdb.connect('./eridu.db')
 record_itemgetter = itemgetter(
   'id', 'gacha_id', 'gacha_type', 'item_id', 'time', 'uid', 'name', 'rank_type', 'item_type'
 )
@@ -20,7 +20,7 @@ def setup():
             time        TEXT NOT NULL,
             player_uid  INTEGER,
            
-           -- It feels weird to store these but it's easier for me
+            -- It feels weird to store these but it's easier for me
             name        TEXT NOT NULL,
             rank_type   INTEGER NOT NULL,
             item_type   TEXT NOT NULL
@@ -46,7 +46,9 @@ def write_records(records: List[dict]):
   conn.commit()
 
 
+def query_uid(uid: int):
+  return conn.execute('SELECT * FROM records WHERE player_uid = ?', [uid]).fetchall()
+
+
 def record_exists(id: str) -> bool:
-  print('foobar', conn.sql('SELECT 1 FROM records WHERE id = ?', [id]))
-  print('foobarbaz', conn.sql('SELECT 1 FROM records WHERE id = ?', [id]).fetchall())
   return conn.sql('SELECT 1 FROM records WHERE id = ?', [id]).fetchall() is not None

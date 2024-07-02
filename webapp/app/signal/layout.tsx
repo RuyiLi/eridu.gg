@@ -1,58 +1,32 @@
-import { Card, Container, Flex, Section } from '@radix-ui/themes'
+import { Box, Flex } from '@radix-ui/themes'
 
-import { Heading } from '@/components/radix/Heading'
-import Image from 'next/image'
-import { Text } from '@/components/radix/Text'
-import masterTape from '@/public/mastertape.webp'
+import { ChannelCard, type ChannelCardProps } from '@/components/signal/ChannelCard'
+import type { Metadata } from 'next'
+import { banners } from '@/util/constants'
 
-const ChannelCard = ({ channel }) => {
-  return (
-    <Card>
-      <Flex gap="3">
-        <Image src={masterTape} alt="Master Tape" className="w-20" />
-        <Text>{channel}</Text>
-      </Flex>
-    </Card>
-  )
+export const metadata: Metadata = {
+  title: 'ERIDU.GG - Signal Tracker',
+  description: 'Zenless Zone Zero Signal Search Tracker',
 }
 
-export default () => {
+export default ({ children }: React.PropsWithChildren) => {
   return (
-    <Container size="4" pt="9">
-      <Flex direction="column" gap="4">
-        <Flex direction="row" gap="4">
-          <Card>
-            <Flex gap="3">
-              <Text>Global Stats</Text>
-            </Flex>
-          </Card>
-          <Card>
-            <Flex gap="3">
-              <Image src={masterTape} alt="Master Tape" className="w-20" />
-              <Text>Exclusive Channel</Text>
-            </Flex>
-          </Card>
-          <Card>
-            <Flex gap="3">
-              <Image src={masterTape} alt="Master Tape" className="w-20" />
-              <Text>W-Engine Channel</Text>
-            </Flex>
-          </Card>
-          <Card>
-            <Flex gap="3">
-              <Image src={masterTape} alt="Master Tape" className="w-20 grayscale" />
-              <Text>Stable Channel</Text>
-            </Flex>
-          </Card>
-          <Card>
-            <Flex gap="3">
-              <Image src={masterTape} alt="Master Tape" className="w-20 grayscale" />
-              <Text>Beginner Channel</Text>
-            </Flex>
-          </Card>
+    <Box px={{ initial: '0', md: '8' }} mt="8">
+      <Flex direction={{ initial: 'column', md: 'row' }} gap="8" px="4">
+        <Flex direction="column" gap="2">
+          {banners.map((banner, i) => (
+            <Box
+              key={banner.bannerId}
+              width={`calc(100% - ${banners.length - 1}rem)`}
+              style={{ marginLeft: `${banners.length - 1 - i}rem` }}
+            >
+              <ChannelCard {...banner} />
+            </Box>
+          ))}
         </Flex>
-        <Flex direction="column"></Flex>
+        <Box></Box>
+        <Flex direction="column">{children}</Flex>
       </Flex>
-    </Container>
+    </Box>
   )
 }

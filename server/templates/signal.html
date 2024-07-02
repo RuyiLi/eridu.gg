@@ -1,0 +1,23 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link type="text/css" rel="stylesheet" href="/static/style/signal.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <title>Signal</title>
+  </head>
+  <body>
+    <div class="signal-container">
+      <div>
+        <h1>Banner Types</h1>
+        <button
+          hx-target="#banner-history"
+          hx-swap="outerHTML"
+          hx-get="/signal/{{ uid }}/history/11"
+        >
+          gacha type 11
+        </button>
+      </div>
+      <div id="banner-history">No gacha type selected</div>
+    </div>
+  </body>
+</html>

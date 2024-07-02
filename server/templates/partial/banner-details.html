@@ -1,0 +1,9 @@
+<div id="banner-details" class="banner-details">
+  <h2>Banner Data</h2>
+  <p>Total pulls: {{ details.all_items | length }}</p>
+  <ul>
+    {% for item in details.all_items %}
+    <li>Name: {{ item.name }}. ID: {{ item.id }}. Type: {{ item.type }}</li>
+    {% endfor %}
+  </ul>
+</div>

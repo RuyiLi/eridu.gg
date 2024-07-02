@@ -2,7 +2,7 @@ import logging
 
 import httpx
 
-from database import write_records, record_exists
+from .database import write_records, record_exists
 
 base_api_url = 'https://api-os-takumi.mihoyo.com'
 gacha_log_path = '/common/gacha_record/api/getGachaLog'

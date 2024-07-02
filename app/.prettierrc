@@ -1,0 +1,13 @@
+{
+  "semi": false,
+  "printWidth": 120,
+  "singleQuote": true,
+  "plugins": ["prettier-plugin-svelte"],
+  "bracketSameLine": true,
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": { "parser": "svelte" }
+    }
+  ]
+}

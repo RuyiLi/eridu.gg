@@ -32,9 +32,11 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => {
       <body className={`${inpin.variable} ${vinaSans.variable}`}>
         <Theme appearance="dark" accentColor="lime" radius="large" scaling="100%">
           <Box className="relative left-0 top-0 flex min-h-[100vh] w-full flex-col justify-between">
-            <Navbar />
-            <Box pt="7"></Box>
-            {children}
+            <Box>
+              <Navbar />
+              <Box pt="7"></Box>
+              {children}
+            </Box>
             <Footer />
           </Box>
         </Theme>

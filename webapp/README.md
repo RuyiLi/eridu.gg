@@ -1,8 +1,9 @@
 ## TODO
 
 - Maybe remove radix-ui/themes altogether, stick with tailwind-only
-  - The two design systems are clashing with each other (e.g. with sizing/spacing/color)
+  - The two design systems are clashing with each other (e.g. with sizing/spacing/color). Need to get rid of one, and seeing as tailwind's capabilities are a superset of radix's, it makes sense to remove the latter
   - If we really need components we can just use radix primitives
+  - Also change tailwind to max-size breakpoints since min is annoying to work with
 
 ## Getting Started
 

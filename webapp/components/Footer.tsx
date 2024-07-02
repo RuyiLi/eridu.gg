@@ -1,5 +1,4 @@
 import { Box } from '@radix-ui/themes'
-import { Marquee } from './Marquee'
 
 export const Footer = () => {
   return (
