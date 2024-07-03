@@ -5,10 +5,10 @@
 </script>
 
 <div
-  class="absolute top-0 left-0 flex gap-2 w-full opacity-15 overflow-hidden text-inherit italic select-none whitespace-nowrap
+  class="absolute top-0 left-0 flex gap-0 w-full opacity-15 overflow-hidden text-inherit italic select-none whitespace-nowrap
     {reverse ? '*:animate-[marquee_25s_linear_reverse_infinite]' : '*:animate-[marquee_25s_linear_infinite]'}">
   {#each { length: repeat } as _}
-    <h1>{text}</h1>
+    <h1>{text}&nbsp;</h1>
   {/each}
 </div>
 

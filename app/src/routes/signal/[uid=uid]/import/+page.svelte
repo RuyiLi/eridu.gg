@@ -1,5 +1,16 @@
 <script lang="ts">
   import Link from '$lib/components/Link.svelte'
+  import { navigating } from '$app/stores'
+
+  export let form:
+    | {
+        status: 200
+        importedUid: string
+      }
+    | {
+        status: 400
+        error: string
+      }
 
   type Platform = keyof typeof platforms
 
@@ -54,7 +65,10 @@
         {/each}
       </ol>
 
-      <form method="POST" class="flex gap-0 mt-5">
+      {#if form?.status === 400}
+        <p class="p-2 block text-red-400 text-sm -mb-4">{form.error}</p>
+      {/if}
+      <form method="POST" class="flex gap-0 mt-4">
         <input
           type="text"
           name="signalRecordsUrl"

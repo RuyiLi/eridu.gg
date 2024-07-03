@@ -1,18 +1,21 @@
-import { query, transact } from './database'
+import type { HoyoGachaRecord } from './data'
+import { connect } from './database'
 
 const BASE_API_URL = 'https://api-os-takumi.mihoyo.com'
-const GACHA_LOG_PATH = '/event/gacha_info/api/getGachaLog'
+const GACHA_LOG_PATH = '/common/gacha_record/api/getGachaLog'
 const MAX_PAGES = 500
 
-export async function* importGachaLog(
+export async function importGachaLog(
   authkeyVer: string,
   signType: string,
   lang: string,
   authkey: string,
   gameBiz: string,
   gachaType: string,
-  uid: string[],
+  onProgress?: (count: number) => void,
 ) {
+  console.log(`Starting gacha log import. Gacha type is ${gachaType} and authkey is ${authkey}.`)
+
   const url = new URL(GACHA_LOG_PATH, BASE_API_URL)
   url.searchParams.append('authkey_ver', authkeyVer)
   url.searchParams.append('sign_type', signType)
@@ -22,7 +25,8 @@ export async function* importGachaLog(
   url.searchParams.append('gacha_type', gachaType)
   url.searchParams.append('size', '20')
 
-  const records = []
+  const sql = await connect()
+  const records: HoyoGachaRecord[] = []
   let endId = 0
   for (let page = 1; page <= MAX_PAGES; page++) {
     url.searchParams.set('page', page.toString())
@@ -31,69 +35,103 @@ export async function* importGachaLog(
     const body = await fetch(url).then((res) => res.json())
     if (body.retcode !== 0) {
       console.error(`Failed to fetch gacha log: ${body.message}`)
-      break
+      return {
+        success: false,
+        error: body.message,
+      }
     }
 
     const data = body.data
-    if (!data?.list) {
+    if (!data?.list?.length) {
       // reached end of records
       break
     }
 
-    records.push(...data.list)
+    const pageRecords = data.list as HoyoGachaRecord[]
+    records.push(...pageRecords)
     endId = data.list.at(-1).id
 
-    const existsQuery = await query('SELECT 1 FROM signals WHERE id = $1', [endId])
-    if (existsQuery.rows.length) {
+    const existing = await sql('SELECT 1 FROM signals WHERE id = $1', [endId])
+    if (existing.length) {
       // short circuit if the last record already exists in the database
       // since everything after this record should also be in the database
       break
     }
 
-    yield records.length
+    onProgress?.(records.length)
   }
 
-  console.log(`Fetched ${records.length} records`)
+  const uid = records.length ? records[0].uid : null
+  console.log(`Fetched ${records.length} records. Returning instantly, database insertion will occur later.`)
 
-  const columns = {
-    id: [],
-    gacha_id: [],
-    gacha_type: [],
-    item_id: [],
-    time: [],
-    player_uid: [],
-    name: [],
-    rank_type: [],
-    item_type: [],
-  }
+  async function uploadRecords() {
+    console.time(`record-insert-${uid}`)
 
-  for (const record of records) {
-    for (const [col, value] of Object.entries(record)) {
-      // @ts-ignore !!!!
-      columns[col].push(value)
+    // transpose records for bulk insert
+    const columns: {
+      id: string[]
+      gacha_id: string[]
+      gacha_type: string[]
+      item_id: string[]
+      time: Date[]
+      player_uid: string[]
+      name: string[]
+      rank_type: string[]
+      item_type: string[]
+    } = {
+      id: [],
+      gacha_id: [],
+      gacha_type: [],
+      item_id: [],
+      time: [],
+      player_uid: [],
+      name: [],
+      rank_type: [],
+      item_type: [],
     }
+
+    for (const record of records) {
+      columns.id.push(record.id)
+      columns.gacha_id.push(record.gacha_id)
+      columns.gacha_type.push(record.gacha_type)
+      columns.item_id.push(record.item_id)
+      columns.time.push(new Date(record.time))
+      columns.player_uid.push(record.uid)
+      columns.name.push(record.name)
+      columns.rank_type.push(record.rank_type)
+      columns.item_type.push(record.item_type)
+    }
+
+    const insertResult = await sql.transaction([
+      sql(
+        `
+        INSERT INTO signals 
+          (id, gacha_id, gacha_type, item_id, time, player_uid, name, rank_type, item_type)
+        SELECT * FROM UNNEST($1::TEXT[], $2::INTEGER[], $3::INTEGER[], $4::INTEGER[], $5::TIMESTAMP[], $6::INTEGER[], $7::TEXT[], $8::INTEGER[], $9::TEXT[])
+        ON CONFLICT DO NOTHING
+        `,
+        [
+          columns.id,
+          columns.gacha_id,
+          columns.gacha_type,
+          columns.item_id,
+          columns.time,
+          columns.player_uid,
+          columns.name,
+          columns.rank_type,
+          columns.item_type,
+        ],
+      ),
+    ])
+
+    console.log(`Inserted ${insertResult.length} records into the database for UID ${uid}.`)
+    console.timeEnd(`record-insert-${uid}`)
   }
 
-  const insertResult = await transact(
-    `
-    INSERT INTO signals 
-      (id, gacha_id, gacha_type, item_id, time, player_uid, name, rank_type, item_type)
-    SELECT * FROM UNNEST($)
-    ON CONFLICT DO NOTHING
-    `,
-    [
-      columns.id,
-      columns.gacha_id,
-      columns.gacha_type,
-      columns.item_id,
-      columns.time,
-      columns.player_uid,
-      columns.name,
-      columns.rank_type,
-      columns.item_type,
-    ],
-  )
+  setTimeout(uploadRecords, 0)
 
-  uid[0] = records[0].player_uid
-  console.log(`Inserted ${insertResult.rowCount} records into the database for UID ${uid[0]}.`)
+  return {
+    success: true,
+    uid,
+  }
 }

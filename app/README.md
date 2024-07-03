@@ -4,7 +4,9 @@ Fanmade Zenless Zone Zero database.
 
 ## Roadmap
 
-- Character database
 - Pull tracker
+- Character database
 - Character showcase
-- Component-alize links
+- Light mode
+- Alternative font
+- [DEV] Better typing

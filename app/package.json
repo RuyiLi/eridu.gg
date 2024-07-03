@@ -29,6 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@neondatabase/serverless": "^0.9.4",
 		"pg": "^8.12.0"
 	}
 }
