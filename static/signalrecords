@@ -1,0 +1,89 @@
+# Copyright 2024 ERIDU.GG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Methodology heavily inspired by the Star Rail Station Warp History URL script.
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
+
+# Print initial message
+Write-Output "Locating signal records URL. Make sure that the history is open in-game."
+
+# Locate APPDATA path
+$appData = [System.Environment]::GetFolderPath('ApplicationData')
+$miHoYoPath = Join-Path $appData "..\LocalLow\miHoYo\ZenlessZoneZero"
+
+# Check for Player.log or Player-prev.log
+$logPath = Join-Path $miHoYoPath "Player.log"
+if (-Not (Test-Path $logPath)) {
+    $logPath = Join-Path $miHoYoPath "Player-prev.log"
+    if (-Not (Test-Path $logPath)) {
+        Write-Output "Couldn't find signal records URL. Are you sure you have the banner history details open in-game?"
+        return
+    }
+}
+
+# Read the log file
+$logContent = Get-Content $logPath
+$gamePath = $null
+foreach ($line in $logContent) {
+    if ($line -match "\[Subsystems\] Discovering subsystems at path (.+/UnitySubsystems)") {
+        $gamePath = $matches[1].Substring(0, $matches[1].Length - 16)
+        break
+    }
+}
+
+# Abort if gamePath is null or empty
+if ([string]::IsNullOrEmpty($gamePath)) {
+    Write-Output "Couldn't find signal records URL. Are you sure you have the banner history details open in-game?"
+    return
+}
+
+# Find the maximum version directory
+$cachePath = Join-Path $gamePath "webCaches\Cache\Cache_Data\data_2"
+$webCachesPath = Join-Path $gamePath "webCaches"
+$maxVersion = Get-ChildItem $webCachesPath -Directory | Where-Object { $_.Name -match "^\d+\.\d+\.\d+\.\d+$" } |
+    Sort-Object { [version]$_.Name } | Select-Object -Last 1
+
+if ($maxVersion -ne $null) {
+    $cachePath = Join-Path $webCachesPath "$($maxVersion.Name)\Cache\Cache_Data\data_2"
+}
+
+# Copy, read, and delete the temporary file
+$tempFile = New-TemporaryFile
+Copy-Item $cachePath $tempFile.FullName
+$fileContent = Get-Content $tempFile.FullName -Raw
+Remove-Item $tempFile.FullName
+
+# Split the contents and find the valid URL
+$entries = $fileContent -split "1/0/"
+foreach ($entry in $entries) {
+    if ($entry -match "^https://.*/getGachaLog.*") {
+        $url = ($entry.Trim() -split "\0")[0]
+        try {
+            $response = Invoke-RestMethod -Uri $url -ContentType 'application/json'
+            if ($response.retcode -eq 0) {
+                Write-Output $url
+                Set-Clipboard -Value $url
+                Write-Output "Copied URL to clipboard."
+                return
+            }
+        } catch {
+            continue
+        }
+    }
+}
+
+# If no valid URL found
+Write-Output "Couldn't find signal records URL. Are you sure you have the banner history details open in-game?"
