@@ -6,7 +6,7 @@
   $: pathname = '/' + $page.url.pathname.split('/')[1]
 
   const routes = [
-    { name: 'Agent Showcase', path: '/characters', img: '/images/agents.webp' },
+    // { name: 'Agent Showcase', path: '/characters', img: '/images/agents.webp' },
     { name: 'Signal Tracker', path: '/signal', img: '/images/signal-search.webp' },
   ]
 </script>
@@ -15,7 +15,7 @@
   <div>
     <nav
       class="grid grid-cols-4 w-full *:border-stone-700 *:border-b *:border-l *:!border-l-stone-700 *:px-2 *:flex *:items-center">
-      <Link href="/" class="col-span-2 !border-l-0 group" active={pathname === '/'}>
+      <Link href="/" class="col-span-3 !border-l-0 group" active={pathname === '/'}>
         <img src="/favicon.png" alt="Bangboo Icon" class="inline w-10 h-10 mr-2 brightness-0 invert" />
         <h1 class="inline text-4xl -translate-y-0.5">ERIDU.GG</h1>
       </Link>

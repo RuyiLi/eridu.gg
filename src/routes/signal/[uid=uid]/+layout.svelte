@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { banners, type GachaRecord } from '$lib/data'
+  import { activeBanners, banners, CDN_BASE_URL, eventBannerData, type GachaRecord } from '$lib/data'
   import Link from '$lib/components/Link.svelte'
 
   $: routeUid = $page.params.uid ?? 'x'
@@ -42,14 +42,22 @@
     <Link href="/signal/x/global" active={selectedBanner === 'global'}>Global Stats</Link>
     {#each banners as banner}
       <Link href="/signal/{routeUid}/{banner.slug}" active={selectedBanner === banner.slug}>
-        <p>{banner.name}</p>
-        <div class="flex justify-between text-purple-400">
-          <p>A-Rank</p>
-          <p>{bannerPity[banner.id].a}/10</p>
-        </div>
-        <div class="flex justify-between text-orange-400">
-          <p>S-Rank</p>
-          <p>{bannerPity[banner.id].s}/{banner.superPity}</p>
+        {#if banner.id === 2 || banner.id === 3}
+          <img
+            src="{CDN_BASE_URL}/channels/{activeBanners[banner.id - 2]}.webp"
+            alt=""
+            class="absolute top-0 left-0 max-h-full w-full object-cover opacity-25" />
+        {/if}
+        <div class="relative z-10">
+          <p>{banner.name}</p>
+          <div class="flex justify-between text-purple-400">
+            <p>A-Rank</p>
+            <p>{bannerPity[banner.id].a}/10</p>
+          </div>
+          <div class="flex justify-between text-orange-400">
+            <p>S-Rank</p>
+            <p>{bannerPity[banner.id].s}/{banner.superPity}</p>
+          </div>
         </div>
       </Link>
     {/each}

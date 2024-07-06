@@ -137,7 +137,7 @@ export async function importGachaLog(recordsUrl: string, gachaType: BannerType, 
       ),
     ])
 
-    console.log(`Inserted ${insertResult.length} records into the database for UID ${uid}.`)
+    console.log(`Inserted ${insertResult} records into the database for UID ${uid}.`)
     console.timeEnd(`record-insert-${uid}`)
   }
 

@@ -24,6 +24,7 @@ export interface HoyoGachaRecord {
 
 export interface EventBanner {
   name: string
+  color: string
   itemId: number
   subItems: [number, number]
 }
@@ -72,11 +73,13 @@ export function getBannerId(bannerType: BannerType, gachaId: number): number {
 export const eventBannerData: Record<number, EventBanner> = {
   [getBannerId(1, 0)]: {
     name: 'Star-Studded Cast',
+    color: '',
     itemId: 0,
     subItems: [0, 0],
   },
   [getBannerId(2, 0)]: {
     name: 'Mellow Waveride',
+    color: 'rgb(252, 53, 118)',
     itemId: 1191,
     subItems: [1111, 1131],
   },

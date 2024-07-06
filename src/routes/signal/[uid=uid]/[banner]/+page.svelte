@@ -58,12 +58,13 @@
 
   $: selectedEventBanner = -1
   $: selectedEventBannerRecords = eventBanners.get(selectedEventBanner) ?? []
+  $: baseEventBannerData = eventBannerData[getBannerId(bannerType, selectedEventBanner)] ?? {
+    name: banner.name,
+    itemId: 0,
+    subItems: [0, 0],
+  }
   $: selectedEventBannerData = {
-    ...(eventBannerData[getBannerId(bannerType, selectedEventBanner)] ?? {
-      name: banner.name,
-      itemId: 0,
-      subItems: [0, 0],
-    }),
+    ...baseEventBannerData,
     totalPulls: selectedEventBannerRecords.length,
     sRanks: selectedEventBannerRecords.filter((record) => record.rank_type === 4).length,
     aRanks: selectedEventBannerRecords.filter((record) => record.rank_type === 3).length,
@@ -80,9 +81,9 @@
       >importing</Link> your records.
   </p>
 {:else}
-  <!-- Event banners -->
-  {#if bannerType !== 1}
-    <div class="flex gap-2 p-2 border-b border-stone-700">
+  <!-- Specific event banners -->
+  {#if bannerType !== 1 && bannerType !== 5}
+    <div class="flex gap-2 p-2">
       <Link
         on:click={() => (selectedEventBanner = -1)}
         as="button"
@@ -98,7 +99,7 @@
             on:click={() => (selectedEventBanner = eventBannerId)}
             as="button"
             active={selectedEventBanner === eventBannerId}
-            class="relative !bg-transparent border opacity-70 hover:opacity-90 p-0"
+            class="relative !bg-transparent border opacity-70 hover:opacity-90 !p-0"
             activeClass="opacity-100">
             <img
               src="{CDN_BASE_URL}/channels/{getBannerId(bannerType, eventBannerId)}.webp"
@@ -110,55 +111,108 @@
     </div>
   {/if}
 
-  <div class="relative grid grid-cols-6 border-b border-stone-700">
-    <div id="event-banner-data" class="relative col-span-4 flex flex-col gap-1 *:flex *:justify-between">
-      <span class="relative top-0 left-0 bg-stone-500 text-lg px-2">{selectedEventBannerData.name}</span>
-      <div class="px-2">
-        <p>Total Pulls</p>
-        <p>
+  <div
+    id="banner-stats"
+    style="--theme-color: {selectedEventBannerData.color}"
+    class="relative h-[300px] border-t-4 border-b-8 rounded-br-[70rem] rounded-tl-[140rem]">
+    <span class="absolute -bottom-1 left-0 translate-y-full px-2 text-lg bg-theme">
+      {selectedEventBannerData.name}
+    </span>
+
+    <img
+      src="/images/wallpaper.webp"
+      alt=""
+      class="absolute top-0 left-0 w-full h-full object-cover rounded-br-[70rem] rounded-tl-[140rem] grayscale brightness-75" />
+
+    {#if selectedEventBanner !== -1 && bannerType === 2}
+      <img
+        src="{CDN_BASE_URL}/cinema/{selectedEventBannerData.itemId}.webp"
+        alt=""
+        class="absolute top-0 left-0 w-full h-full object-cover contrast-90 z-10 rounded-br-[70rem] rounded-tl-[140rem]" />
+    {/if}
+
+    <div class="absolute top-0 left-0 w-full z-20 *:text-sm scale-110">
+      <div class="absolute top-10 left-[25%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">01</span>
+          </h1>
+          Total Pulls
+        </div>
+        <p class="w-full bg-stone-900 px-2 py-0.5 pb-1">
           {selectedEventBannerData.totalPulls}
-          <!-- <img src="/images/master-tape.webp" alt="Master Tape" class="inline w-5 h-5 -translate-y-[0.05rem]" /> -->
         </p>
       </div>
-      <div class="px-2">
-        <p>S-Ranks</p>
-        <p>{selectedEventBannerData.sRanks}</p>
+
+      <div class="absolute top-6 left-[45%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">02</span>
+          </h1>
+          S-Ranks
+        </div>
+        <p class="w-full bg-black px-2 py-0.5 pb-1">
+          {selectedEventBannerData.sRanks}
+        </p>
       </div>
-      <div class="px-2">
-        <p>A-Ranks</p>
-        <p>{selectedEventBannerData.aRanks}</p>
+
+      <div class="absolute top-14 left-[60%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">03</span>
+          </h1>
+          A-Ranks
+        </div>
+        <p class="w-full bg-black px-2 py-0.5 pb-1">
+          {selectedEventBannerData.aRanks}
+        </p>
       </div>
-      <div class="px-2">
-        <p>Average S-Rank Pity</p>
-        <p>{Math.round(selectedEventBannerData.sRankAvgPity * 10) / 10}</p>
+
+      <div class="absolute top-40 left-[20%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">04</span>
+          </h1>
+          Avg S-Rank Pity
+        </div>
+        <p class="w-full bg-black px-2 py-0.5 pb-1">
+          {selectedEventBannerData.sRankAvgPity}
+        </p>
       </div>
-      <div class="px-2 mb-1">
-        <p>Average A-Rank Pity</p>
-        <p>{Math.round(selectedEventBannerData.aRankAvgPity * 10) / 10}</p>
+
+      <div class="absolute top-48 left-[40%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">05</span>
+          </h1>
+          Avg A-Rank Pity
+        </div>
+        <p class="w-full bg-black px-2 py-0.5 pb-1">
+          {selectedEventBannerData.sRankAvgPity}
+        </p>
+      </div>
+
+      <div class="absolute top-36 left-[62%]">
+        <div class="relative py-0.5 px-2 bg-theme">
+          <h1
+            class="absolute top-0 left-0 h-full flex items-center justify-center aspect-square -translate-x-full bg-white text-stone-800">
+            <span class="-translate-y-0.5 scale-110 origin-top">06</span>
+          </h1>
+          50/50 Win Rate
+        </div>
+        <p class="w-full bg-black px-2 py-0.5 pb-1">
+          {sRankPities.length
+            ? selectedEventBannerRecords.filter((record) => record.item_id === selectedEventBannerData.itemId).length /
+              selectedEventBannerData.sRanks
+            : 0}%
+        </p>
       </div>
     </div>
-
-    {#if ![1, -1].includes(selectedEventBanner)}
-      <div class="grid grid-rows-2 col-span-1 overflow-hidden border-l border-stone-700">
-        <img
-          src="{CDN_BASE_URL}/characters/{selectedEventBannerData.subItems[0]}.webp"
-          alt=""
-          class="row-span-1 w-full aspect-square object-cover object-top drop-shadow-[-0.8rem_0_0_theme('colors.purple.400')]" />
-        <img
-          src="{CDN_BASE_URL}/characters/{selectedEventBannerData.subItems[1]}.webp"
-          alt=""
-          class="row-span-1 w-full aspect-square object-cover object-top border-t border-stone-700 drop-shadow-[0.8rem_0_0_theme('colors.purple.400')]" />
-      </div>
-
-      <div class="relative col-span-1 overflow-hidden border-l border-stone-700">
-        <img
-          src="{CDN_BASE_URL}/characters/{selectedEventBannerData.itemId}.webp"
-          alt=""
-          class="absolute top-0 left-0 w-full h-full object-cover drop-shadow-[0.8rem_0_0_theme('colors.orange.400')]" />
-      </div>
-    {:else}
-      <div class="border-l border-stone-700"></div>
-    {/if}
   </div>
 
   <div class="flex justify-center items-center gap-3 p-2 *:w-12 *:h-12 *:cursor-pointer">
@@ -173,7 +227,7 @@
     </button>
   </div>
 
-  <div class="flex flex-col gap-1 *:grid *:grid-cols-8 p-2">
+  <div class="flex flex-col gap-1 *:grid *:grid-cols-8 p-2 my-12">
     <div>
       <p class="col-span-1">Roll #</p>
       <p class="col-span-3">Item</p>
@@ -197,7 +251,11 @@
 {/if}
 
 <style>
-  #event-banner-data > div > p:last-child {
-    color: theme('colors.orange.300');
+  #banner-stats {
+    border-color: var(--theme-color, theme('colors.orange.500'));
+  }
+
+  #banner-stats .bg-theme {
+    background-color: var(--theme-color, theme('colors.orange.500'));
   }
 </style>
