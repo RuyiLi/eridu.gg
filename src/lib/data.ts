@@ -29,6 +29,15 @@ export interface EventBanner {
   subItems: [number, number]
 }
 
+export interface GlobalBannerStats {
+  totalCount: number
+  sRankCount: number
+  aRankCount: number
+  totalUsers: number
+  sWinCount: number
+  aWinCount: number
+}
+
 export type BannerSlug = (typeof banners)[number]['slug']
 export type BannerType = (typeof banners)[number]['id']
 
@@ -70,6 +79,14 @@ export function getBannerId(bannerType: BannerType, gachaId: number): number {
   return bannerType * 1000 + gachaId
 }
 
+export function getBannerType(bannerId: any): BannerType {
+  return Math.floor(bannerId / 1000) as BannerType
+}
+
+export function getGachaId(bannerId: any): number {
+  return bannerId % 1000
+}
+
 export const eventBannerData: Record<number, EventBanner> = {
   [getBannerId(1, 0)]: {
     name: 'Star-Studded Cast',
@@ -77,11 +94,27 @@ export const eventBannerData: Record<number, EventBanner> = {
     itemId: 0,
     subItems: [0, 0],
   },
+
+  // BEGIN EXCLUSIVE CHANNEL
   [getBannerId(2, 0)]: {
     name: 'Mellow Waveride',
     color: 'rgb(252, 53, 118)',
     itemId: 1191,
     subItems: [1111, 1131],
+  },
+  [getBannerId(2, 1)]: {
+    name: 'Unswerving Bullet',
+    color: 'rgb(252, 53, 118)',
+    itemId: 1191,
+    subItems: [1111, 1131],
+  },
+
+  // BEGIN W-ENGINE CHANNEL
+  [getBannerId(3, 0)]: {
+    name: 'Dissonant Sonata',
+    color: '#2e3235',
+    itemId: 14119,
+    subItems: [13111, 13113],
   },
 }
 

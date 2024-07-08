@@ -76,6 +76,10 @@
           Import
         </button>
       </form>
+      <p class="text-sm text-stone-400 max-w-full w-[640px] p-2">
+        After importing your records, they will be publicly accessibly on this site through your UID. An option to make
+        your records private is coming soon.
+      </p>
     </div>
   {/if}
 </div>

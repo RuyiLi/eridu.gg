@@ -39,7 +39,7 @@
 
   <!-- Banners (right side) -->
   <div class="flex flex-col col-span-1 border-stone-700 *:border-l *:border-b *:!border-b-stone-700">
-    <Link href="/signal/x/global" active={selectedBanner === 'global'}>Global Stats</Link>
+    <!-- <Link href="/signal/x/global" active={selectedBanner === 'global'}>Global Stats</Link> -->
     {#each banners as banner}
       <Link href="/signal/{routeUid}/{banner.slug}" active={selectedBanner === banner.slug}>
         {#if banner.id === 2 || banner.id === 3}
@@ -61,6 +61,8 @@
         </div>
       </Link>
     {/each}
-    <div class="border-l !border-b-0 border-inherit grow"></div>
+    <div class="border-l !border-b-0 border-inherit grow p-2">
+      <p class="text-stone-400">* 🌎 = Global Stats</p>
+    </div>
   </div>
 </section>
