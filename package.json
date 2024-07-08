@@ -30,6 +30,7 @@
 	"type": "module",
 	"dependencies": {
 		"@neondatabase/serverless": "^0.9.4",
+		"@sveltejs/adapter-node": "^5.2.0",
 		"pg": "^8.12.0"
 	}
 }
