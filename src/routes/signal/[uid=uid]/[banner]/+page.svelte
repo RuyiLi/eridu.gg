@@ -3,13 +3,14 @@
   import Link from '$lib/components/Link.svelte'
   import { banners, CDN_BASE_URL, eventBannerData, getBannerId, type GlobalBannerStats } from '$lib/data'
   import { type GachaRecord } from '$lib/data'
-  import { roundPct } from '$lib/util'
+  import { round, roundPct } from '$lib/util'
 
   type GacheRecordIndexed = GachaRecord & { index: number }
 
   export let data: { records: GachaRecord[]; global: Record<number, GlobalBannerStats> }
 
   const records = data.records
+  const globalStats = data.global
   const rankColors = {
     2: 'text-blue-400',
     3: 'text-purple-400',
@@ -27,7 +28,9 @@
     const pities = []
     for (let i = records.length - 1; i >= 0; i--) {
       pity++
-      if (records[i].rank_type === rankType) {
+      if (rankType === 3 && records[i].rank_type === 4) {
+        pity = 0
+      } else if (records[i].rank_type === rankType) {
         pities.push(pity)
         pity = 0
       }
@@ -75,12 +78,12 @@
     totalPulls: selectedEventBannerRecords.length,
     sRanks: selectedEventBannerRecords.filter((record) => record.rank_type === 4).length,
     aRanks: selectedEventBannerRecords.filter((record) => record.rank_type === 3).length,
-    sRankAvgPity: sRankPities.length ? sRankPities.reduce((a, b) => a + b) / sRankPities.length : 0,
-    aRankAvgPity: aRankPities.length ? aRankPities.reduce((a, b) => a + b) / aRankPities.length : 0,
+    sRankAvgPity: sRankPities.length ? sRankPities.reduce((a, b) => a + b, 0) / sRankPities.length : 0,
+    aRankAvgPity: aRankPities.length ? aRankPities.reduce((a, b) => a + b, 0) / aRankPities.length : 0,
   }
 
   $: displayedRecords = (eventBanners.get(selectedEventBanner) ?? []).filter((record) => rankFilter[record.rank_type])
-  $: globalEventStats = data.global[getBannerId(bannerType, selectedEventBanner)]
+  $: globalEventStats = globalStats[getBannerId(bannerType, selectedEventBanner)] ?? {}
 </script>
 
 <div style="--theme-color: {selectedEventBannerData.color}">
@@ -196,7 +199,7 @@
               Avg S-Rank Pity
             </div>
             <p class="w-full bg-black px-2 text-base py-[0.4rem]">
-              {selectedEventBannerData.sRankAvgPity}
+              {round(selectedEventBannerData.sRankAvgPity)}
             </p>
           </div>
 
@@ -209,7 +212,7 @@
               Avg A-Rank Pity
             </div>
             <p class="w-full bg-black px-2 text-base py-[0.4rem]">
-              {selectedEventBannerData.sRankAvgPity}
+              {round(selectedEventBannerData.aRankAvgPity)}
             </p>
           </div>
 
@@ -295,7 +298,7 @@
         <div
           class="{rankColors[
             record.rank_type
-          ]} *:leading-[3rem] *:align-middle border-b border-stone-800 *:border-l *:border-inherit *:px-2">
+          ]} *:flex *:items-center border-b border-stone-800 *:border-l *:border-inherit *:px-2">
           <p class="col-span-1 !border-l-0">{record.index}</p>
           <p class="col-span-3">
             <img src="{CDN_BASE_URL}/items/{record.item_id}.webp" alt="" class="inline h-10 object-cover" />

@@ -64,5 +64,5 @@ export async function load({ params, cookies }) {
     return { savedUid, records, global }
   }
 
-  return { savedUid, records: [] }
+  return { savedUid, records: [], global: {} }
 }
