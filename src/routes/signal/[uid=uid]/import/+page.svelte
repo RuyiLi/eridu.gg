@@ -16,7 +16,7 @@
   let entryMethod = 'auto'
   let platform: Platform = 'windows'
 
-  const windowsScript = 'iwr -useb https://eridu.gg/signalrecords | iex'
+  const windowsScript = 'iwr -usebasic https://eridu.gg/signalrecords | iex'
 
   const platforms = {
     windows: {
